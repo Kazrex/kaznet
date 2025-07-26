@@ -6,29 +6,30 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from bot.config import BOT_TOKEN
 from bot.utils.logger import setup_logger
 from bot.utils.db import init_db
-from bot.handlers import start, city_selection, new_ad, my_ads, help
+from bot.scheduler import setup_scheduler # ЖАҢА ИМПОРТ
+from bot.handlers import start, city_selection, new_ad, my_ads, help, view_all_ads, admin_panel
 
 async def main():
-    # Дерекқорды инициализациялау
     await init_db()
-
-    # Логгерді баптау
     setup_logger()
     logging.info("Starting bot...")
 
-    # Bot, Dispatcher және Storage объектілерін құру
     bot = Bot(token=BOT_TOKEN, parse_mode="HTML")
     storage = MemoryStorage()
     dp = Dispatcher(storage=storage)
 
-    # Роутерлерді (хендлерлерді) қосу
+    # Роутерлерді қосу
+    dp.include_router(admin_panel.router)
     dp.include_router(start.router)
     dp.include_router(city_selection.router)
     dp.include_router(new_ad.router)
     dp.include_router(my_ads.router)
     dp.include_router(help.router)
+    dp.include_router(view_all_ads.router)
 
-    # Ботты іске қосу
+    # ЖОСПАРЛАУШЫНЫ ІСКЕ ҚОСУ
+    setup_scheduler(bot)
+
     try:
         await bot.delete_webhook(drop_pending_updates=True)
         await dp.start_polling(bot)

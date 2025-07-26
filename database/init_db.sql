@@ -1,4 +1,4 @@
--- Пайдаланушылар кестесі
+-- Пайдаланушылар кестесі (өзгеріссіз)
 CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     telegram_id INTEGER UNIQUE NOT NULL,
@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS users (
     selected_city TEXT
 );
 
--- Хабарландырулар кестесі
+-- Хабарландырулар кестесі (ЖАҢА БАҒАНДАРМЕН)
 CREATE TABLE IF NOT EXISTS ads (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER NOT NULL,
@@ -19,5 +19,12 @@ CREATE TABLE IF NOT EXISTS ads (
     city TEXT NOT NULL,
     category TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    -- ЖАҢА БАҒАНДАР --
+    expires_at TIMESTAMP NOT NULL,          -- Хабарландырудың өшетін уақыты
+    is_top BOOLEAN DEFAULT 0,               -- ТОП статусы (1 - иә, 0 - жоқ)
+    top_expires_at TIMESTAMP,               -- ТОП статусының бітетін уақыты
+    status TEXT DEFAULT 'active',           -- Статус: active, pending_deletion, expired
+    
     FOREIGN KEY (user_id) REFERENCES users (id)
 );
